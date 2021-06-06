@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from serializers.object_serializers.definer import get_creator
+from serializers.object_serializers.creater import get_creator
 import argparse
 import logging
 

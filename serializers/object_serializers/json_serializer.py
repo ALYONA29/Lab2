@@ -2,6 +2,11 @@
 import serializers.parsers.parser as json_parser
 from serializers.object_serializers.serializer import *
 
+class JsonSerializerCreator(SerializerCreator):
+
+    def create_serializer(self) -> ISerializer:
+        serializer = JsonSerializer()
+        return serializer
 
 class JsonSerializer(ISerializer):
 
@@ -11,9 +16,3 @@ class JsonSerializer(ISerializer):
     def loads(self, s: str) -> object:
         return json_parser.loads(s)
 
-
-class JsonSerializerCreator(SerializerCreator):
-
-    def create_serializer(self) -> ISerializer:
-        serializer = JsonSerializer()
-        return serializer

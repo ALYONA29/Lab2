@@ -7,21 +7,10 @@ from serializers.function_serializers import source_function_saver, code_functio
 
 
 CONST = 42
-USELESSCONST = 12345678790**69
+b = 5
 
-
-def SaveFunction(f):
-    source_function_saver.function_dump(f, CUR_PATH + SOURCE_NAME)
-    code_function_saver.function_dump(f, CUR_PATH + CODE_NAME)
-
-def LoadFunction():
-    fs = source_function_saver.function_load(CUR_PATH + SOURCE_NAME)
-    fc = code_function_saver.function_load(CUR_PATH + CODE_NAME)
-    return (fs, fc)
-
-
-def f_consts_answer(x: int) -> int: 
-    return 5542 + x
+def test_func(num):
+    return (num ** 2) * b
 
 def f_consts(x: int) -> int: 
     return x + CONST + 5500
@@ -56,12 +45,6 @@ def f_closures(a):
     return f_closures_sub
 
 
-def test_f_consts():
-    SaveFunction(f_consts)
-    x = 13
-    for f in LoadFunction():
-        assert f(x) == f_consts_answer(x)
-
 def test_f_recursion():
     SaveFunction(f_recursion)
     x = 42
@@ -79,3 +62,12 @@ def test_f_closures():
     a, b = 13, 42
     for f in LoadFunction():
         assert f(a)(b) == f_closures_answer(a, b)
+
+def SaveFunction(f):
+    source_function_saver.function_dump(f, CUR_PATH + SOURCE_NAME)
+    code_function_saver.function_dump(f, CUR_PATH + CODE_NAME)
+
+def LoadFunction():
+    fs = source_function_saver.function_load(CUR_PATH + SOURCE_NAME)
+    fc = code_function_saver.function_load(CUR_PATH + CODE_NAME)
+    return (fs, fc)

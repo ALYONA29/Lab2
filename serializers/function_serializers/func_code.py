@@ -1,8 +1,32 @@
 
 import inspect
-#import dis
 import types
-#import ctypes
+
+import serializers.parsers.parser as json_parser
+
+def function_loads(s: str) -> object:
+    dct = json_parser.loads(s)
+    func = deserialize_function(dct)
+    return func
+
+
+def function_load(fp: str):
+    f = open(fp, "r")
+    s = f.read()
+    f.close()
+    return function_loads(s)
+
+def function_dumps(func) -> str:
+    dct = serialize_obj(func)
+    return json_parser.dumps(dct, indent=4)
+
+
+def function_dump(func, fp: str):
+    s = function_dumps(func)
+    f = open(fp, "w")
+    f.write(s)
+    f.close()
+
 
 def serialize_obj(obj) -> dict:
     if obj is None:
@@ -56,7 +80,7 @@ def serialize_function(f: object) -> dict:
                             dct["__globals__"][name] = serialize_obj(glob[name])
     return dct
 
-def deserialize_co_consts(cc: list):
+def deserialize_consts(cc: list):
     lst = []
     for elem in cc:
         if type(elem) == dict and "co_code" in elem:
@@ -74,7 +98,7 @@ def deserialize_codeobject(code: dict):
         code['co_stacksize'],
         code['co_flags'],
         bytes(code['co_code']),
-        deserialize_co_consts(code['co_consts']),
+        deserialize_consts(code['co_consts']),
         tuple(code['co_names']),
         tuple(code['co_varnames']),
         code['co_filename'],
@@ -108,31 +132,3 @@ def deserialize_function(f: dict):
     result_func.__globals__[result_func.__name__] = result_func
     
     return result_func
-
-
-
-import json
-
-
-def function_dumps(func) -> str:
-    dct = serialize_obj(func)
-    return json.dumps(dct, indent = 4)
-    
-def function_dump(func, fp: str):
-    s = function_dumps(func)
-    f = open(fp, "w")
-    f.write(s)
-    f.close()
-
-
-def function_loads(s: str) -> object:
-    dct = json.loads(s)
-    func = deserialize_function(dct)
-    return func
-    
-def function_load(fp: str):
-    f = open(fp, "r")
-    s = f.read()
-    f.close()
-    return function_loads(s)
-    
