@@ -3,76 +3,10 @@ import re
 FLOAT_REGEX = "-?[\d]+\.[\d]+"
 INT_REGEX = "^-?[\d]+$"
 
-
-def dumps(obj):
-    def dumps_complex(compl_obj, tabs=''):
-        if len(compl_obj) == 0:
-            return '{}\n'
-        ans = str()
-        for key, item in compl_obj.items():
-            ans += tabs + key + ': '
-            obj_type = type(item)
-            if obj_type is dict:
-                tabs += '\t'
-                if len(item) != 0:
-                    ans += '\n'
-                ans += dumps_complex(item, tabs)
-                tabs = tabs[:len(tabs)-1]
-            elif obj_type is list or obj_type is tuple:
-                ans += dumps_simple(item, tabs) + '\n'
-            elif obj_type is str:
-                if (' ' in item) or ('\t' in item) or ('\n' in item):
-                    ans += '\'' + item + '\'' + '\n'
-                else:
-                    ans += item + '\n'
-            elif obj_type is bool:
-                if item:
-                    ans += "true" + '\n'
-                else:
-                    ans += "false" + '\n'
-            elif item is None:
-                ans += "null" + '\n'
-            else:
-                ans += str(item) + '\n'
-        return ans
-
-    def dumps_simple(simp_obj, tabs=''):
-        if len(simp_obj) == 0:
-            return "[]"
-        ans = str()
-        for item in simp_obj:
-            obj_type = type(item)
-            if obj_type == str:
-                ans += '\n' + tabs + '- '
-                if (' ' in item) or ('\t' in item) or ('\n' in item):
-                    ans += '\'' + item + '\''
-                else:
-                    ans += item
-            elif obj_type == dict:
-                ans += '\n' + tabs + '-' + '\n'
-                tabs += '\t'
-                ans += tabs + dumps_complex(item)
-                tabs = tabs[:len(tabs)-1]
-            elif obj_type == list or type(item) == tuple:
-                ans += '\n' + tabs + '- ' + dumps_simple(item)
-            elif obj_type == bool:
-                if item:
-                    ans += '\n' + tabs + '- ' + 'true'
-                else:
-                    ans += '\n' + tabs + '- ' + 'false'
-            elif item is None:
-                ans += '\n' + tabs + '- ' + 'null'
-            else:
-                ans += '\n' + tabs + '- ' + str(item)
-        return ans
-
-    return dumps_complex(obj)
-
-
-def dump(obj, file):
-    with open(file, 'w') as f:
-        f.write(dumps(obj))
-
+def load(file):
+    with open(file, 'r') as f:
+        result = f.read()
+        return loads(result)
 
 def loads(temp_str):
     def find_last_index(str_obj, i, tab_counter):
@@ -271,8 +205,71 @@ def loads(temp_str):
 
     return loads_obj(temp_str)
 
+def dumps(obj):
+    def dumps_complex(compl_obj, tabs=''):
+        if len(compl_obj) == 0:
+            return '{}\n'
+        ans = str()
+        for key, item in compl_obj.items():
+            ans += tabs + key + ': '
+            obj_type = type(item)
+            if obj_type is dict:
+                tabs += '\t'
+                if len(item) != 0:
+                    ans += '\n'
+                ans += dumps_complex(item, tabs)
+                tabs = tabs[:len(tabs)-1]
+            elif obj_type is list or obj_type is tuple:
+                ans += dumps_simple(item, tabs) + '\n'
+            elif obj_type is str:
+                if (' ' in item) or ('\t' in item) or ('\n' in item):
+                    ans += '\'' + item + '\'' + '\n'
+                else:
+                    ans += item + '\n'
+            elif obj_type is bool:
+                if item:
+                    ans += "true" + '\n'
+                else:
+                    ans += "false" + '\n'
+            elif item is None:
+                ans += "null" + '\n'
+            else:
+                ans += str(item) + '\n'
+        return ans
 
-def load(file):
-    with open(file, 'r') as f:
-        result = f.read()
-        return loads(result)
+    def dumps_simple(simp_obj, tabs=''):
+        if len(simp_obj) == 0:
+            return "[]"
+        ans = str()
+        for item in simp_obj:
+            obj_type = type(item)
+            if obj_type == str:
+                ans += '\n' + tabs + '- '
+                if (' ' in item) or ('\t' in item) or ('\n' in item):
+                    ans += '\'' + item + '\''
+                else:
+                    ans += item
+            elif obj_type == dict:
+                ans += '\n' + tabs + '-' + '\n'
+                tabs += '\t'
+                ans += tabs + dumps_complex(item)
+                tabs = tabs[:len(tabs)-1]
+            elif obj_type == list or type(item) == tuple:
+                ans += '\n' + tabs + '- ' + dumps_simple(item)
+            elif obj_type == bool:
+                if item:
+                    ans += '\n' + tabs + '- ' + 'true'
+                else:
+                    ans += '\n' + tabs + '- ' + 'false'
+            elif item is None:
+                ans += '\n' + tabs + '- ' + 'null'
+            else:
+                ans += '\n' + tabs + '- ' + str(item)
+        return ans
+
+    return dumps_complex(obj)
+
+
+def dump(obj, file):
+    with open(file, 'w') as f:
+        f.write(dumps(obj))

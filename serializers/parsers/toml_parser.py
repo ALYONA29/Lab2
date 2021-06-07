@@ -3,75 +3,9 @@ import re
 FLOAT_REGEX = "-?[\d]+\.[\d]+"
 INT_REGEX = "^-?[\d]+$"
 
-def dumps(obj):
-    def dumps_complex(compl_obj, primary_key=''):
-        if len(compl_obj) == 0:
-            return ''
-        ans = str()
-        for key, item in compl_obj.items():
-            obj_type = type(item)
-            if obj_type is dict:
-                continue
-            elif obj_type is list or obj_type is tuple:
-                ans += key + ' = '
-                ans += '[' + dumps_simple(item) + ']\n'
-            elif obj_type is str:
-                ans += key + ' = '
-                ans += '\'' + item + '\'' + '\n'
-            elif obj_type is bool:
-                ans += key + ' = '
-                if item:
-                    ans += "true" + '\n'
-                else:
-                    ans += "false" + '\n'
-            elif item is None:
-                ans += key + ' = '
-                ans += "null" + '\n'
-            else:
-                ans += key + ' = '
-                ans += str(item) + '\n'
-        for key, item in compl_obj.items():
-            obj_type = type(item)
-            if obj_type is dict:
-                if primary_key != '':
-                    primary_key += '.'
-                primary_key += key
-                ans += '\n[' + primary_key + ']\n'
-                ans += dumps_complex(item, primary_key)
-                primary_key = primary_key[:primary_key.rfind('.')]
-        return ans
-
-    def dumps_simple(simp_obj):
-        if len(simp_obj) == 0:
-            return ""
-        ans = str()
-        for item in simp_obj:
-            obj_type = type(item)
-            if obj_type == str:
-                ans += '\'' + item + '\'' + ', '
-            elif obj_type == dict:
-                ans += dumps_complex(item) + ', '
-            elif obj_type == list or type(item) == tuple:
-                ans += '[' + dumps_simple(item) + ']' + ', '
-            elif obj_type == bool:
-                if item:
-                    ans += "true" + ', '
-                else:
-                    ans += "false" + ', '
-            elif item is None:
-                ans += "null" + ', '
-            else:
-                ans += str(item) + ', '
-        ans = ans[0:len(ans)-2]
-        return ans
-
-    return dumps_complex(obj)
-
-
 def dump(obj, file):
     with open(file, 'w') as f:
         f.write(dumps(obj))
-
 
 def loads(temp_str):
     def find_last_index(str_obj, i, key):
@@ -259,6 +193,69 @@ def loads(temp_str):
 
     return loads_obj(temp_str)
 
+def dumps(obj):
+    def dumps_complex(compl_obj, primary_key=''):
+        if len(compl_obj) == 0:
+            return ''
+        ans = str()
+        for key, item in compl_obj.items():
+            obj_type = type(item)
+            if obj_type is dict:
+                continue
+            elif obj_type is list or obj_type is tuple:
+                ans += key + ' = '
+                ans += '[' + dumps_simple(item) + ']\n'
+            elif obj_type is str:
+                ans += key + ' = '
+                ans += '\'' + item + '\'' + '\n'
+            elif obj_type is bool:
+                ans += key + ' = '
+                if item:
+                    ans += "true" + '\n'
+                else:
+                    ans += "false" + '\n'
+            elif item is None:
+                ans += key + ' = '
+                ans += "null" + '\n'
+            else:
+                ans += key + ' = '
+                ans += str(item) + '\n'
+        for key, item in compl_obj.items():
+            obj_type = type(item)
+            if obj_type is dict:
+                if primary_key != '':
+                    primary_key += '.'
+                primary_key += key
+                ans += '\n[' + primary_key + ']\n'
+                ans += dumps_complex(item, primary_key)
+                primary_key = primary_key[:primary_key.rfind('.')]
+        return ans
+
+    def dumps_simple(simp_obj):
+        if len(simp_obj) == 0:
+            return ""
+        ans = str()
+        for item in simp_obj:
+            obj_type = type(item)
+            if obj_type == str:
+                ans += '\'' + item + '\'' + ', '
+            elif obj_type == dict:
+                ans += dumps_complex(item) + ', '
+            elif obj_type == list or type(item) == tuple:
+                ans += '[' + dumps_simple(item) + ']' + ', '
+            elif obj_type == bool:
+                if item:
+                    ans += "true" + ', '
+                else:
+                    ans += "false" + ', '
+            elif item is None:
+                ans += "null" + ', '
+            else:
+                ans += str(item) + ', '
+        ans = ans[0:len(ans)-2]
+        return ans
+
+    return dumps_complex(obj)
 
 def load(file):
     with open(file, 'r') as f:
